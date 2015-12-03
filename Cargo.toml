@@ -2,3 +2,15 @@
 name = "pos"
 version = "0.1.0"
 authors = ["Pete Gadomski <pete.gadomski@gmail.com>"]
+description = "Reads GNSS/IMU position and accuracy files."
+license = "MIT"
+documentation = "http://gadomski.github.io/pos-rs"
+homepage = "https://github.com/gadomski/pos-rs"
+repository = "https://github.com/gadomski/pos-rs"
+keywords = ["gis", "gnss", "imu", "sbet"]
+
+[dependencies]
+byteorder = "0.4"
+
+[profile.test]
+opt-level = 2
