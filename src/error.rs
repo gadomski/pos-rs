@@ -12,6 +12,8 @@ use byteorder;
 pub enum Error {
     /// Wrapper around `byteorder::Error`.
     Byteorder(byteorder::Error),
+    /// This isn't interpolation, this is extrapolation.
+    Extrapolation(String),
     /// Cannot convert the u8 into a `TimeInfo`.
     InvalidTimeInfo(u8),
     /// Cannot convert the u8 into a `TimeUnit`.
@@ -28,6 +30,7 @@ impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
             Error::Byteorder(ref err) => err.description(),
+            Error::Extrapolation(_) => "extrapolation",
             Error::InvalidTimeInfo(_) => "invalid time info",
             Error::InvalidTimeUnit(_) => "invalid time unit",
             Error::Io(ref err) => err.description(),
@@ -51,6 +54,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::Byteorder(ref err) => write!(f, "byteorder error: {}", err),
+            Error::Extrapolation(ref s) => write!(f, "extrapolation error: {}", s),
             Error::InvalidTimeInfo(n) => write!(f, "invalid time info: {}", n),
             Error::InvalidTimeUnit(n) => write!(f, "invalid time unit: {}", n),
             Error::Io(ref err) => write!(f, "IO error: {}", err),

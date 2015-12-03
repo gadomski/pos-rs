@@ -2,6 +2,26 @@
 
 use units::Radians;
 
+macro_rules! interpolate {
+    ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
+        $lhs.$var + $factor * ($rhs.$var - $lhs.$var)
+    }}
+}
+
+macro_rules! interpolate_optional {
+    ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
+        if let Some(l) = $lhs.$var {
+            if let Some(r) = $rhs.$var {
+                Some(l + $factor * (r - l))
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }}
+}
+
 /// A position point.
 ///
 /// This must contain position and attidue information, and may contain error information.
@@ -27,6 +47,54 @@ pub struct Point {
     pub y_angular_rate: Option<Radians<f64>>,
     pub z_angular_rate: Option<Radians<f64>>,
     pub accuracy: Option<Accuracy>,
+}
+
+impl Point {
+    /// Linearly interpolate a new point between these two.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use pos::point::Point;
+    /// let mut p1: Point = Default::default();
+    /// p1.time = 10.0;
+    /// let mut p2: Point = Default::default();
+    /// p2.time = 20.0;
+    /// let p3 = p1.interpolate(&p2, 15.0);
+    /// ```
+    pub fn interpolate(&self, other: &Point, time: f64) -> Point {
+        let factor = (time - self.time) / (other.time - self.time);
+        Point {
+            time: interpolate!(self, other, factor, time),
+            longitude: interpolate!(self, other, factor, longitude),
+            latitude: interpolate!(self, other, factor, latitude),
+            altitude: interpolate!(self, other, factor, altitude),
+            roll: interpolate!(self, other, factor, roll),
+            pitch: interpolate!(self, other, factor, pitch),
+            yaw: interpolate!(self, other, factor, yaw),
+            distance: interpolate_optional!(self, other, factor, distance),
+            x_velocity: interpolate_optional!(self, other, factor, x_velocity),
+            y_velocity: interpolate_optional!(self, other, factor, y_velocity),
+            z_velocity: interpolate_optional!(self, other, factor, z_velocity),
+            wander_angle: interpolate_optional!(self, other, factor, wander_angle),
+            x_acceleration: interpolate_optional!(self, other, factor, x_acceleration),
+            y_acceleration: interpolate_optional!(self, other, factor, y_acceleration),
+            z_acceleration: interpolate_optional!(self, other, factor, z_acceleration),
+            x_angular_rate: interpolate_optional!(self, other, factor, x_angular_rate),
+            y_angular_rate: interpolate_optional!(self, other, factor, y_angular_rate),
+            z_angular_rate: interpolate_optional!(self, other, factor, z_angular_rate),
+            accuracy: if let Some(a1) = self.accuracy {
+                if let Some(a2) = other.accuracy {
+                    Some(a1.interpolate(&a2, time))
+                } else {
+                    None
+                }
+            } else {
+                None
+            },
+        }
+
+    }
 }
 
 /// The accuracy of a position.
@@ -60,14 +128,14 @@ impl Accuracy {
     pub fn interpolate(&self, other: &Accuracy, time: f64) -> Accuracy {
         let factor = (time - self.time) / (other.time - self.time);
         Accuracy {
-            time: self.time + factor * (other.time - self.time),
-            x: self.x + factor * (other.x - self.x),
-            y: self.y + factor * (other.y - self.y),
-            z: self.z + factor * (other.z - self.z),
-            roll: self.roll + factor * (other.roll - self.roll),
-            pitch: self.pitch + factor * (other.pitch - self.pitch),
-            yaw: self.yaw + factor * (other.yaw - self.yaw),
-            pdop: self.pdop + factor * (other.pdop - self.pdop),
+            time: interpolate!(self, other, factor, time),
+            x: interpolate!(self, other, factor, x),
+            y: interpolate!(self, other, factor, y),
+            z: interpolate!(self, other, factor, z),
+            roll: interpolate!(self, other, factor, roll),
+            pitch: interpolate!(self, other, factor, pitch),
+            yaw: interpolate!(self, other, factor, yaw),
+            pdop: interpolate!(self, other, factor, pdop),
             satellite_count: None,
         }
     }

@@ -1,5 +1,6 @@
 //! SBET file format.
 
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::iter::IntoIterator;
@@ -10,6 +11,7 @@ use byteorder::{LittleEndian, ReadBytesExt};
 
 use {Error, Result};
 use point::Point;
+use source::Source;
 use units::Radians;
 
 /// An SBET reader.
@@ -95,6 +97,12 @@ impl<R: Read> Iterator for ReaderIterator<R> {
     }
 }
 
+impl<R: Debug + Read> Source for Reader<R> {
+    fn source(&mut self) -> Result<Option<Point>> {
+        self.read_point()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -104,5 +112,9 @@ mod tests {
         let reader = Reader::from_path("data/2-points.sbet").unwrap();
         let points: Vec<_> = reader.into_iter().collect();
         assert_eq!(2, points.len());
+        let point = points[0];
+        assert!((1.5163100e5 - point.time).abs() < 1e-2, "{}", point.time);
+        assert!((0.5680211 - point.latitude.0).abs() < 1e-7, "{:?}", point.latitude);
+        assert!((1.5163110e5 - points[1].time).abs() < 1e-1, "{}", points[1].time);
     }
 }

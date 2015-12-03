@@ -1,5 +1,8 @@
 //! Position and orientation files.
+//!
+//! These are Riegl-specific GNSS/IMU data files.
 
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::iter::IntoIterator;
@@ -9,40 +12,64 @@ use byteorder::{LittleEndian, ReadBytesExt};
 
 use {Error, Result};
 use io::read_full;
+use source::Source;
 use point::Point;
 use units::Radians;
 
 /// A pos file reader.
 #[derive(Debug)]
-#[allow(missing_docs)]
 pub struct Reader<R: Read + Seek> {
+    /// The average time interval between points.
     pub avgint: f64,
+    /// The name of the company that produced this file.
     pub company: [u8; 32],
+    /// The day this file was written.
     pub day: u16,
+    /// The name of the device that collected this file.
     pub device: [u8; 32],
+    /// The standard deviation of the time interval between points.
     pub devint: f64,
+    /// The number of points in this file.
     pub entries: i64,
+    /// The location that this file was collected.
     pub location: [u8; 16],
+    /// The maximum altitude in this file.
     pub maxalt: f64,
+    /// The maximum time interval between points in this file.
     pub maxint: f64,
+    /// The maximum latitude.
     pub maxlat: f64,
+    /// The maximum longitude.
     pub maxlon: f64,
+    /// The minimum altitude.
     pub minalt: f64,
+    /// The minimum latitude.
     pub minlat: f64,
+    /// The minimum longitude.
     pub minlon: f64,
+    /// The month this file was collected.
     pub month: u16,
+    /// The name of this project.
     pub project: [u8; 32],
+    /// Information about the time stamps in this file.
     pub timeinfo: TimeInfo,
+    /// The units of the times in this file.
     pub timeunit: TimeUnit,
+    /// This file's time zone.
+    ///
+    /// I have no idea if this is a real timezone->string code, or if it is just an arbitrary
+    /// string.
     pub timezone: [u8; 16],
+    /// The version of this file.
     pub version: Version,
+    /// The year this file was collected.
     pub year: u16,
     reader: R,
     position: i64,
 }
 
 impl Reader<BufReader<File>> {
-    /// Creates a new `PofReader` for the given path.
+    /// Creates a new reader for the given path.
     ///
     /// # Examples
     ///
@@ -126,14 +153,14 @@ impl<R: Read + Seek> Reader<R> {
         })
     }
 
-    /// Reads a record from the file.
+    /// Reads a point from the file.
     ///
     /// # Examples
     ///
     /// ```
     /// use pos::pof::Reader;
     /// let mut reader = Reader::from_path("data/sbet_mission_1.pof").unwrap();
-    /// let record = reader.read_point().unwrap();
+    /// let point = reader.read_point().unwrap();
     /// ```
     pub fn read_point(&mut self) -> Result<Option<Point>> {
         if self.position == self.entries {
@@ -259,6 +286,12 @@ impl TimeInfo {
             2 => Ok(TimeInfo::Unknown),
             _ => Err(Error::InvalidTimeInfo(n)),
         }
+    }
+}
+
+impl<R: Debug + Seek + Read> Source for Reader<R> {
+    fn source(&mut self) -> Result<Option<Point>> {
+        self.read_point()
     }
 }
 

@@ -17,12 +17,6 @@ pub trait Source: Debug {
     fn source(&mut self) -> Result<Option<Point>>;
 }
 
-impl<R: Debug + Seek + Read> Source for pof::Reader<R> {
-    fn source(&mut self) -> Result<Option<Point>> {
-        self.read_point()
-    }
-}
-
 impl IntoIterator for Box<Source> {
     type Item = Point;
     type IntoIter = SourceIterator;
