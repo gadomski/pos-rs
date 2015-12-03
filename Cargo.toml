@@ -8,6 +8,7 @@ documentation = "http://gadomski.github.io/pos-rs"
 homepage = "https://github.com/gadomski/pos-rs"
 repository = "https://github.com/gadomski/pos-rs"
 keywords = ["gis", "gnss", "imu", "sbet"]
+exclude = ["data/*"]
 
 [dependencies]
 byteorder = "0.4"
