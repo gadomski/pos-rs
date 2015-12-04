@@ -1,11 +1,13 @@
 //! Pos files are ASCII position files.
 
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 
 use Result;
 use point::Point;
+use source::Source;
 use units::Radians;
 
 /// A pos reader.
@@ -82,6 +84,11 @@ impl<R: BufRead> Iterator for ReaderIterator<R> {
     }
 }
 
+impl<R: Debug + BufRead> Source for Reader<R> {
+    fn source(&mut self) -> Result<Option<Point>> {
+        self.read_point()
+    }
+}
 
 #[cfg(test)]
 mod tests {
