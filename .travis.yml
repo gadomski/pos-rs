@@ -1,7 +1,0 @@
-language: rust
-after_success:
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash
-  deploy-docs.sh
-env:
-  global:
-    secure: sA4vkW6IuF5g/byic1I7TQGfJxrT6fGi1kACEGxU38FPiI8LDxIo3cBXymfSpAcjM4Lz//pNDDTal+S6UJnL+vuKiGojaWh/ciVnxKEuOUHtBMwA5Kq+cVr5i+wt4obNUGbrvYZmA3RDL8Wo2yrqSjbVN3fd74dNJbsObMaJtybgyRSEFwSSkW33ccb//nZB2OvhtyttM6fFomvovK6bR2SPJxS9fKXigQqdJB5EMCw1RXtJ2pEayCl4KT3Kzzhz8RBUL7e2nTbqDF7Oj5+3CnkcRmxyl50AJ9oRddcpVzUDljh2JhRE5Q31jc9krx4EpmgtltNoMvcaOpTWQZ/tss1sViJL71hh+RuEcTTP+xSr+OoQlV/qf0TdhOrDY7fNiOmXot0AnQIIkDqtXaP17iHQmlqO/7s3nrAVW+8pgOAKA0IXABm5kMmzhNq1BajJKiks5nkfHkoyk7BnMWdNrxNfP9+21bdrJX/Y/toaK3vbni88XuzrtGjNUxK3Ldxq8tcJiQXXSOCeu0yj1LZ92n7d4LWwYXvOLng0fVNc+68Bo5IGZJh1Mjr/3+W159RrvtQignvNUB7BpN48Edyu41x0Mn++purYyvpcdqTewxqBWlj1Ll7ykY7QPvgsHRhgbxN5i1WQIIs/kpNX6RiaO6HsVW/4xpgjYbMHxTseXoM=
