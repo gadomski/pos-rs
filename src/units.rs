@@ -15,8 +15,10 @@ impl Radians<f64> {
     /// # Examples
     ///
     /// ```
+    /// use std::f64::consts::PI;
     /// use pos::units::Radians;
     /// let radians = Radians::from_degrees(180.0);
+    /// assert_eq!(PI, radians.0);
     /// ```
     pub fn from_degrees(degrees: f64) -> Radians<f64> {
         Radians(degrees * PI / 180.0)
@@ -27,8 +29,10 @@ impl Radians<f64> {
     /// # Examples
     ///
     /// ```
+    /// use std::f64::consts::PI;
     /// use pos::units::Radians;
-    /// let degrees = Radians(3.14).to_degrees();
+    /// let degrees = Radians(PI / 2.0).to_degrees();
+    /// assert_eq!(90.0, degrees);
     /// ```
     pub fn to_degrees(self) -> f64 {
         self.0 * 180.0 / PI
