@@ -6,13 +6,13 @@ use point::Point;
 
 /// Structure that handles the interpolation.
 #[derive(Debug)]
-pub struct Interpolator<S: Source> {
+pub struct Interpolator {
     index: usize,
-    source: Box<S>,
+    source: Box<Source>,
     points: Vec<Point>,
 }
 
-impl<S: Source> Interpolator<S> {
+impl Interpolator {
     /// Creates a new interpolator for a given source.
     ///
     /// # Examples
@@ -23,7 +23,7 @@ impl<S: Source> Interpolator<S> {
     /// let reader = sbet::Reader::from_path("data/2-points.sbet").unwrap();
     /// let interpolator = Interpolator::new(Box::new(reader)).unwrap();
     /// ```
-    pub fn new(mut source: Box<S>) -> Result<Interpolator<S>> {
+    pub fn new(mut source: Box<Source>) -> Result<Interpolator> {
         let mut points = Vec::with_capacity(2);
         for _ in 0..2 {
             points.push(match try!(source.source()) {
