@@ -84,11 +84,14 @@ pub struct CombinedSource {
 
 impl CombinedSource {
     /// Creates a new combined source from two boxes.
-    pub fn new(source: Box<Source>,
-               mut accuracy_source: Box<AccuracySource>)
-               -> Result<CombinedSource> {
-        let accuracies = (try!(accuracy_source.source()),
-                          try!(accuracy_source.source()));
+    pub fn new(
+        source: Box<Source>,
+        mut accuracy_source: Box<AccuracySource>,
+    ) -> Result<CombinedSource> {
+        let accuracies = (
+            try!(accuracy_source.source()),
+            try!(accuracy_source.source()),
+        );
         Ok(CombinedSource {
             source: source,
             accuracy_source: accuracy_source,
@@ -106,7 +109,8 @@ impl Source for CombinedSource {
         // Since we populate the accuracies on create, if these are none we've run out of
         // accuracies.
         if self.accuracies.0.is_none() || self.accuracies.1.is_none() ||
-           point.time < self.accuracies.0.unwrap().time {
+            point.time < self.accuracies.0.unwrap().time
+        {
             return Ok(Some(point));
         }
         loop {
@@ -120,10 +124,10 @@ impl Source for CombinedSource {
                 return Ok(Some(point));
             }
         }
-        point.accuracy = Some(self.accuracies
-                                  .0
-                                  .unwrap()
-                                  .interpolate(&self.accuracies.1.unwrap(), point.time));
+        point.accuracy = Some(self.accuracies.0.unwrap().interpolate(
+            &self.accuracies.1.unwrap(),
+            point.time,
+        ));
         Ok(Some(point))
     }
 }
@@ -167,12 +171,12 @@ mod tests {
     fn read_pof_with_poq() {
         let source = pof::Reader::open_file_source("data/sbet_mission_1.pof").unwrap();
         let accuracy_source = poq::Reader::open_file_accuracy_source("data/sbet_mission_1.poq")
-                                  .unwrap();
+            .unwrap();
         let accuracies: Vec<_> = CombinedSource::new(source, accuracy_source)
-                                     .unwrap()
-                                     .into_iter()
-                                     .take(20)
-                                     .collect();
+            .unwrap()
+            .into_iter()
+            .take(20)
+            .collect();
         assert_eq!(20, accuracies.len());
     }
 }

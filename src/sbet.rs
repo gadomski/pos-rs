@@ -114,7 +114,15 @@ mod tests {
         assert_eq!(2, points.len());
         let point = points[0];
         assert!((1.5163100e5 - point.time).abs() < 1e-2, "{}", point.time);
-        assert!((0.5680211 - point.latitude.0).abs() < 1e-7, "{:?}", point.latitude);
-        assert!((1.5163110e5 - points[1].time).abs() < 1e-1, "{}", points[1].time);
+        assert!(
+            (0.5680211 - point.latitude.0).abs() < 1e-7,
+            "{:?}",
+            point.latitude
+        );
+        assert!(
+            (1.5163110e5 - points[1].time).abs() < 1e-1,
+            "{}",
+            points[1].time
+        );
     }
 }

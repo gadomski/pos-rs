@@ -29,9 +29,11 @@ impl Interpolator {
             points.push(match try!(source.source()) {
                 Some(point) => point,
                 None => {
-                    return Err(Error::Extrapolation("Source must have at least two points for \
+                    return Err(Error::Extrapolation(
+                        "Source must have at least two points for \
                                                      interpolation"
-                                                        .to_string()))
+                            .to_string(),
+                    ))
                 }
             });
         }
@@ -58,9 +60,11 @@ impl Interpolator {
             assert!(self.index != 0 && self.index != self.points.len());
             if time < self.points[self.index - 1].time {
                 if self.index == 1 {
-                    return Err(Error::Extrapolation(format!("Time {} is below the minimum time \
+                    return Err(Error::Extrapolation(format!(
+                        "Time {} is below the minimum time \
                                                              of this source",
-                                                            time)));
+                        time
+                    )));
                 } else {
                     self.index -= 1;
                 }
@@ -74,9 +78,11 @@ impl Interpolator {
                             self.index += 1;
                         }
                         None => {
-                            return Err(Error::Extrapolation(format!("Time {} is above the \
+                            return Err(Error::Extrapolation(format!(
+                                "Time {} is above the \
                                                                      maximum time of this source",
-                                                                    time)))
+                                time
+                            )))
                         }
                     }
                 }
@@ -84,7 +90,10 @@ impl Interpolator {
                 break;
             }
         }
-        Ok(self.points[self.index - 1].interpolate(&self.points[self.index], time))
+        Ok(self.points[self.index - 1].interpolate(
+            &self.points[self.index],
+            time,
+        ))
     }
 }
 
@@ -96,10 +105,12 @@ mod tests {
 
     #[test]
     fn interp_sbet() {
-        let mut interpolator = Interpolator::new(Box::new(sbet::Reader::from_path("data/2-point\
-                                                                                   s.sbet")
-                                                              .unwrap()))
-                                   .unwrap();
+        let mut interpolator = Interpolator::new(Box::new(
+            sbet::Reader::from_path(
+                "data/2-point\
+                                                                                   s.sbet",
+            ).unwrap(),
+        )).unwrap();
         let time = 1.516310048360710e5;
         let point = interpolator.interpolate(time).unwrap();
         assert_eq!(time, point.time);

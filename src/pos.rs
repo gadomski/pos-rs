@@ -97,9 +97,9 @@ mod tests {
     #[test]
     fn point_count() {
         let points: Vec<_> = Reader::from_path("data/0916_2014_ie.pos")
-                                 .unwrap()
-                                 .into_iter()
-                                 .collect();
+            .unwrap()
+            .into_iter()
+            .collect();
         assert_eq!(722800, points.len());
     }
 }
