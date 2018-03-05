@@ -1,6 +1,5 @@
 //! Position and orientation quality files.
 
-
 use {Error, Result};
 
 use byteorder;

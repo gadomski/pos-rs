@@ -1,6 +1,5 @@
 //! Sources of position points.
 
-
 use Result;
 use pof;
 use point::{Accuracy, Point};

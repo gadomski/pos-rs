@@ -1,6 +1,5 @@
 //! Pos files are ASCII position files.
 
-
 use Result;
 use point::Point;
 use source::Source;

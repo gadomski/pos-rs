@@ -1,6 +1,5 @@
 //! SBET file format.
 
-
 use {Error, Result};
 
 use byteorder;

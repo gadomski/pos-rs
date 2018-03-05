@@ -2,7 +2,6 @@
 //!
 //! These are Riegl-specific GNSS/IMU data files.
 
-
 use {Error, Result};
 
 use byteorder::{LittleEndian, ReadBytesExt};

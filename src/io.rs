@@ -1,6 +1,5 @@
 //! Utilities for reading and writing
 
-
 use byteorder::{Error, Result};
 use std::io;
 

@@ -1,6 +1,5 @@
 //! Our custom errors.
 
-
 use byteorder;
 use std::error;
 use std::fmt;
