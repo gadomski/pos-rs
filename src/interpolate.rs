@@ -1,8 +1,8 @@
 //! Interpolate between two position points.
 
 use {Error, Result};
-use source::Source;
 use point::Point;
+use source::Source;
 
 /// Structure that handles the interpolation.
 #[derive(Debug)]
@@ -26,7 +26,7 @@ impl Interpolator {
     pub fn new(mut source: Box<Source>) -> Result<Interpolator> {
         let mut points = Vec::with_capacity(2);
         for _ in 0..2 {
-            points.push(match try!(source.source()) {
+            points.push(match source.source()? {
                 Some(point) => point,
                 None => {
                     return Err(Error::Extrapolation(
@@ -72,7 +72,7 @@ impl Interpolator {
                 if self.index < self.points.len() - 1 {
                     self.index += 1;
                 } else {
-                    match try!(self.source.source()) {
+                    match self.source.source()? {
                         Some(point) => {
                             self.points.push(point);
                             self.index += 1;

@@ -1,8 +1,8 @@
 //! Utilities for reading and writing
 
-use std::io;
 
 use byteorder::{Error, Result};
+use std::io;
 
 /// Reads enough data to fill the buffer, or errors.
 ///

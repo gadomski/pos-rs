@@ -1,16 +1,16 @@
 //! Position and orientation quality files.
 
-use std::fs::File;
-use std::io::{BufReader, Seek, Read};
-use std::iter::IntoIterator;
-use std::path::Path;
+
+use {Error, Result};
 
 use byteorder;
 use byteorder::{LittleEndian, ReadBytesExt};
-
-use {Error, Result};
 use io::read_full;
 use point::{Accuracy, SatelliteCount};
+use std::fs::File;
+use std::io::{BufReader, Read, Seek};
+use std::iter::IntoIterator;
+use std::path::Path;
 use units::Radians;
 
 /// A poq file reader.
@@ -34,7 +34,7 @@ impl Reader<BufReader<File>> {
     /// let reader = Reader::from_path("data/sbet_mission_1.poq").unwrap();
     /// ```
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
-        let reader = BufReader::new(try!(File::open(path)));
+        let reader = BufReader::new(File::open(path)?);
         Reader::new(reader)
     }
 }
@@ -42,14 +42,14 @@ impl Reader<BufReader<File>> {
 impl<R: Seek + Read> Reader<R> {
     fn new(mut reader: R) -> Result<Reader<R>> {
         let ref mut preamble = [0; 35];
-        try!(read_full(&mut reader, preamble));
+        read_full(&mut reader, preamble)?;
 
-        let major = try!(reader.read_u16::<LittleEndian>());
-        let minor = try!(reader.read_u16::<LittleEndian>());
+        let major = reader.read_u16::<LittleEndian>()?;
+        let minor = reader.read_u16::<LittleEndian>()?;
         let version = Version::new(major, minor);
-        let avgint = try!(reader.read_f64::<LittleEndian>());
-        let maxint = try!(reader.read_f64::<LittleEndian>());
-        let devint = try!(reader.read_f64::<LittleEndian>());
+        let avgint = reader.read_f64::<LittleEndian>()?;
+        let maxint = reader.read_f64::<LittleEndian>()?;
+        let devint = reader.read_f64::<LittleEndian>()?;
 
         Ok(Reader {
             avgint: avgint,
@@ -75,22 +75,22 @@ impl<R: Seek + Read> Reader<R> {
             Err(byteorder::Error::UnexpectedEOF) => return Ok(None),
             Err(err) => return Err(Error::from(err)),
         };
-        let north = try!(self.reader.read_f64::<LittleEndian>());
-        let east = try!(self.reader.read_f64::<LittleEndian>());
-        let down = try!(self.reader.read_f64::<LittleEndian>());
-        let roll = try!(self.reader.read_f64::<LittleEndian>());
-        let pitch = try!(self.reader.read_f64::<LittleEndian>());
-        let yaw = try!(self.reader.read_f64::<LittleEndian>());
-        let pdop = try!(self.reader.read_f64::<LittleEndian>());
+        let north = self.reader.read_f64::<LittleEndian>()?;
+        let east = self.reader.read_f64::<LittleEndian>()?;
+        let down = self.reader.read_f64::<LittleEndian>()?;
+        let roll = self.reader.read_f64::<LittleEndian>()?;
+        let pitch = self.reader.read_f64::<LittleEndian>()?;
+        let yaw = self.reader.read_f64::<LittleEndian>()?;
+        let pdop = self.reader.read_f64::<LittleEndian>()?;
         let satellite_count = if self.version.specifies_satellite_count() {
-            let ngps = try!(self.reader.read_u16::<LittleEndian>());
-            let nglonass = try!(self.reader.read_u16::<LittleEndian>());
+            let ngps = self.reader.read_u16::<LittleEndian>()?;
+            let nglonass = self.reader.read_u16::<LittleEndian>()?;
             SatelliteCount::Specified {
                 gps: ngps,
                 glonass: nglonass,
             }
         } else {
-            SatelliteCount::Unspecified(try!(self.reader.read_u16::<LittleEndian>()))
+            SatelliteCount::Unspecified(self.reader.read_u16::<LittleEndian>()?)
         };
 
         Ok(Some(Accuracy {

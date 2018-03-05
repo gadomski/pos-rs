@@ -2,18 +2,18 @@
 //!
 //! These are Riegl-specific GNSS/IMU data files.
 
+
+use {Error, Result};
+
+use byteorder::{LittleEndian, ReadBytesExt};
+use io::read_full;
+use point::Point;
+use source::Source;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::iter::IntoIterator;
 use std::path::Path;
-
-use byteorder::{LittleEndian, ReadBytesExt};
-
-use {Error, Result};
-use io::read_full;
-use source::Source;
-use point::Point;
 use units::Radians;
 
 /// A pos file reader.
@@ -78,7 +78,7 @@ impl Reader<BufReader<File>> {
     /// let reader = Reader::from_path("data/sbet_mission_1.pof").unwrap();
     /// ```
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
-        let reader = BufReader::new(try!(File::open(path)));
+        let reader = BufReader::new(File::open(path)?);
         Reader::new(reader)
     }
 }
@@ -86,45 +86,45 @@ impl Reader<BufReader<File>> {
 impl<R: Read + Seek> Reader<R> {
     fn new(mut reader: R) -> Result<Reader<R>> {
         let mut preamble = [0; 27];
-        try!(read_full(&mut reader, &mut preamble));
+        read_full(&mut reader, &mut preamble)?;
 
-        let major = try!(reader.read_u16::<LittleEndian>());
-        let minor = try!(reader.read_u16::<LittleEndian>());
+        let major = reader.read_u16::<LittleEndian>()?;
+        let minor = reader.read_u16::<LittleEndian>()?;
         let version = Version::new(major, minor);
 
-        let data_offset = try!(reader.read_u32::<LittleEndian>());
-        let year = try!(reader.read_u16::<LittleEndian>());
-        let month = try!(reader.read_u16::<LittleEndian>());
-        let day = try!(reader.read_u16::<LittleEndian>());
-        let entries = try!(reader.read_i64::<LittleEndian>());
-        let minlon = try!(reader.read_f64::<LittleEndian>());
-        let maxlon = try!(reader.read_f64::<LittleEndian>());
-        let minlat = try!(reader.read_f64::<LittleEndian>());
-        let maxlat = try!(reader.read_f64::<LittleEndian>());
-        let minalt = try!(reader.read_f64::<LittleEndian>());
-        let maxalt = try!(reader.read_f64::<LittleEndian>());
-        let avgint = try!(reader.read_f64::<LittleEndian>());
-        let maxint = try!(reader.read_f64::<LittleEndian>());
-        let devint = try!(reader.read_f64::<LittleEndian>());
-        let timeunit = try!(TimeUnit::from_u8(try!(reader.read_u8())));
-        let timeinfo = try!(TimeInfo::from_u8(try!(reader.read_u8())));
+        let data_offset = reader.read_u32::<LittleEndian>()?;
+        let year = reader.read_u16::<LittleEndian>()?;
+        let month = reader.read_u16::<LittleEndian>()?;
+        let day = reader.read_u16::<LittleEndian>()?;
+        let entries = reader.read_i64::<LittleEndian>()?;
+        let minlon = reader.read_f64::<LittleEndian>()?;
+        let maxlon = reader.read_f64::<LittleEndian>()?;
+        let minlat = reader.read_f64::<LittleEndian>()?;
+        let maxlat = reader.read_f64::<LittleEndian>()?;
+        let minalt = reader.read_f64::<LittleEndian>()?;
+        let maxalt = reader.read_f64::<LittleEndian>()?;
+        let avgint = reader.read_f64::<LittleEndian>()?;
+        let maxint = reader.read_f64::<LittleEndian>()?;
+        let devint = reader.read_f64::<LittleEndian>()?;
+        let timeunit = TimeUnit::from_u8(reader.read_u8()?)?;
+        let timeinfo = TimeInfo::from_u8(reader.read_u8()?)?;
 
         let mut timezone = [0; 16];
-        try!(read_full(&mut reader, &mut timezone));
+        read_full(&mut reader, &mut timezone)?;
         let mut location = [0; 16];
-        try!(read_full(&mut reader, &mut location));
+        read_full(&mut reader, &mut location)?;
         let mut device = [0; 32];
-        try!(read_full(&mut reader, &mut device));
+        read_full(&mut reader, &mut device)?;
         let mut reserved = [0; 32];
-        try!(read_full(&mut reader, &mut reserved));
+        read_full(&mut reader, &mut reserved)?;
         let mut project = [0; 32];
-        try!(read_full(&mut reader, &mut project));
+        read_full(&mut reader, &mut project)?;
         let mut company = [0; 32];
-        try!(read_full(&mut reader, &mut company));
+        read_full(&mut reader, &mut company)?;
         let mut reserved2 = [0; 32];
-        try!(read_full(&mut reader, &mut reserved2));
+        read_full(&mut reader, &mut reserved2)?;
 
-        let _ = try!(reader.seek(SeekFrom::Start(data_offset as u64)));
+        let _ = reader.seek(SeekFrom::Start(data_offset as u64))?;
 
         Ok(Reader {
             avgint: avgint,
@@ -167,15 +167,15 @@ impl<R: Read + Seek> Reader<R> {
             return Ok(None);
         }
 
-        let time = try!(self.reader.read_f64::<LittleEndian>());
-        let longitude = try!(self.reader.read_f64::<LittleEndian>());
-        let latitude = try!(self.reader.read_f64::<LittleEndian>());
-        let altitude = try!(self.reader.read_f64::<LittleEndian>());
-        let roll = try!(self.reader.read_f64::<LittleEndian>());
-        let pitch = try!(self.reader.read_f64::<LittleEndian>());
-        let yaw = try!(self.reader.read_f64::<LittleEndian>());
+        let time = self.reader.read_f64::<LittleEndian>()?;
+        let longitude = self.reader.read_f64::<LittleEndian>()?;
+        let latitude = self.reader.read_f64::<LittleEndian>()?;
+        let altitude = self.reader.read_f64::<LittleEndian>()?;
+        let roll = self.reader.read_f64::<LittleEndian>()?;
+        let pitch = self.reader.read_f64::<LittleEndian>()?;
+        let yaw = self.reader.read_f64::<LittleEndian>()?;
         let distance = if self.version.has_distance() {
-            Some(try!(self.reader.read_f64::<LittleEndian>()))
+            Some(self.reader.read_f64::<LittleEndian>()?)
         } else {
             None
         };

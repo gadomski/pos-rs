@@ -1,13 +1,13 @@
 //! Pos files are ASCII position files.
 
-use std::fmt::Debug;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-use std::path::Path;
 
 use Result;
 use point::Point;
 use source::Source;
+use std::fmt::Debug;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+use std::path::Path;
 use units::Radians;
 
 /// A pos reader.
@@ -26,9 +26,9 @@ impl Reader<BufReader<File>> {
     /// let reader = Reader::from_path("data/0916_2014_ie.pos").unwrap();
     /// ```
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
-        let mut reader = BufReader::new(try!(File::open(path)));
+        let mut reader = BufReader::new(File::open(path)?);
         let ref mut header: String = String::new();
-        let _ = try!(reader.read_line(header));
+        let _ = reader.read_line(header)?;
         Ok(Reader { reader: reader })
     }
 }
@@ -45,19 +45,19 @@ impl<R: BufRead> Reader<R> {
     /// ```
     pub fn read_point(&mut self) -> Result<Option<Point>> {
         let mut line = String::new();
-        let _ = try!(self.reader.read_line(&mut line));
+        let _ = self.reader.read_line(&mut line)?;
         let values: Vec<_> = line.split_whitespace().map(|s| s.clone()).collect();
         if values.is_empty() {
             return Ok(None);
         }
         Ok(Some(Point {
-            time: try!(values[0].parse()),
-            latitude: Radians::from_degrees(try!(values[1].parse())),
-            longitude: Radians::from_degrees(try!(values[2].parse())),
-            altitude: try!(values[3].parse()),
-            roll: Radians::from_degrees(try!(values[4].parse())),
-            pitch: Radians::from_degrees(try!(values[5].parse())),
-            yaw: Radians::from_degrees(try!(values[6].parse())),
+            time: values[0].parse()?,
+            latitude: Radians::from_degrees(values[1].parse()?),
+            longitude: Radians::from_degrees(values[2].parse()?),
+            altitude: values[3].parse()?,
+            roll: Radians::from_degrees(values[4].parse()?),
+            pitch: Radians::from_degrees(values[5].parse()?),
+            yaw: Radians::from_degrees(values[6].parse()?),
             ..Default::default()
         }))
     }

@@ -1,17 +1,17 @@
 //! SBET file format.
 
+
+use {Error, Result};
+
+use byteorder;
+use byteorder::{LittleEndian, ReadBytesExt};
+use point::Point;
+use source::Source;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::iter::IntoIterator;
 use std::path::Path;
-
-use byteorder;
-use byteorder::{LittleEndian, ReadBytesExt};
-
-use {Error, Result};
-use point::Point;
-use source::Source;
 use units::Radians;
 
 /// An SBET reader.
@@ -30,7 +30,7 @@ impl Reader<BufReader<File>> {
     /// let reader = Reader::from_path("data/2-points.sbet").unwrap();
     /// ```
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
-        Ok(Reader { reader: BufReader::new(try!(File::open(path))) })
+        Ok(Reader { reader: BufReader::new(File::open(path)?) })
     }
 }
 
@@ -55,22 +55,22 @@ impl<R: Read> Reader<R> {
         };
         Ok(Some(Point {
             time: time,
-            latitude: Radians(try!(self.reader.read_f64::<LittleEndian>())),
-            longitude: Radians(try!(self.reader.read_f64::<LittleEndian>())),
-            altitude: try!(self.reader.read_f64::<LittleEndian>()),
-            x_velocity: Some(try!(self.reader.read_f64::<LittleEndian>())),
-            y_velocity: Some(try!(self.reader.read_f64::<LittleEndian>())),
-            z_velocity: Some(try!(self.reader.read_f64::<LittleEndian>())),
-            roll: Radians(try!(self.reader.read_f64::<LittleEndian>())),
-            pitch: Radians(try!(self.reader.read_f64::<LittleEndian>())),
-            yaw: Radians(try!(self.reader.read_f64::<LittleEndian>())),
-            wander_angle: Some(Radians(try!(self.reader.read_f64::<LittleEndian>()))),
-            x_acceleration: Some(try!(self.reader.read_f64::<LittleEndian>())),
-            y_acceleration: Some(try!(self.reader.read_f64::<LittleEndian>())),
-            z_acceleration: Some(try!(self.reader.read_f64::<LittleEndian>())),
-            x_angular_rate: Some(Radians(try!(self.reader.read_f64::<LittleEndian>()))),
-            y_angular_rate: Some(Radians(try!(self.reader.read_f64::<LittleEndian>()))),
-            z_angular_rate: Some(Radians(try!(self.reader.read_f64::<LittleEndian>()))),
+            latitude: Radians(self.reader.read_f64::<LittleEndian>()?),
+            longitude: Radians(self.reader.read_f64::<LittleEndian>()?),
+            altitude: self.reader.read_f64::<LittleEndian>()?,
+            x_velocity: Some(self.reader.read_f64::<LittleEndian>()?),
+            y_velocity: Some(self.reader.read_f64::<LittleEndian>()?),
+            z_velocity: Some(self.reader.read_f64::<LittleEndian>()?),
+            roll: Radians(self.reader.read_f64::<LittleEndian>()?),
+            pitch: Radians(self.reader.read_f64::<LittleEndian>()?),
+            yaw: Radians(self.reader.read_f64::<LittleEndian>()?),
+            wander_angle: Some(Radians(self.reader.read_f64::<LittleEndian>()?)),
+            x_acceleration: Some(self.reader.read_f64::<LittleEndian>()?),
+            y_acceleration: Some(self.reader.read_f64::<LittleEndian>()?),
+            z_acceleration: Some(self.reader.read_f64::<LittleEndian>()?),
+            x_angular_rate: Some(Radians(self.reader.read_f64::<LittleEndian>()?)),
+            y_angular_rate: Some(Radians(self.reader.read_f64::<LittleEndian>()?)),
+            z_angular_rate: Some(Radians(self.reader.read_f64::<LittleEndian>()?)),
             ..Default::default()
         }))
     }

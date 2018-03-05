@@ -1,11 +1,11 @@
 //! Our custom errors.
 
+
+use byteorder;
 use std::error;
 use std::fmt;
 use std::io;
-use std::num::{ParseIntError, ParseFloatError};
-
-use byteorder;
+use std::num::{ParseFloatError, ParseIntError};
 
 /// Our custom error enum.
 #[derive(Debug)]

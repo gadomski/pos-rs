@@ -25,11 +25,11 @@ pub mod units;
 
 pub use error::Error;
 pub use interpolate::Interpolator;
-pub use source::{Source, AccuracySource, FileSource, FileAccuracySource, CombinedSource};
-pub use point::{Point, Accuracy};
-pub use units::Radians;
+pub use point::{Accuracy, Point};
+pub use source::{AccuracySource, CombinedSource, FileAccuracySource, FileSource, Source};
 
 use std::result;
+pub use units::Radians;
 
 /// Our custom result type.
 pub type Result<T> = result::Result<T, Error>;

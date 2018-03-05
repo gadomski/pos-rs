@@ -1,15 +1,15 @@
 //! Sources of position points.
 
-use std::fmt::Debug;
-use std::fs::File;
-use std::io::{BufReader, Seek, Read};
-use std::iter::IntoIterator;
-use std::path::Path;
 
 use Result;
 use pof;
-use poq;
 use point::{Accuracy, Point};
+use poq;
+use std::fmt::Debug;
+use std::fs::File;
+use std::io::{BufReader, Read, Seek};
+use std::iter::IntoIterator;
+use std::path::Path;
 
 /// A source of points.
 pub trait Source: Debug {
@@ -58,7 +58,7 @@ pub trait FileSource {
 
 impl FileSource for pof::Reader<BufReader<File>> {
     fn open_file_source<P: AsRef<Path>>(path: P) -> Result<Box<Source>> {
-        Ok(Box::new(try!(pof::Reader::from_path(path))))
+        Ok(Box::new(pof::Reader::from_path(path)?))
     }
 }
 
@@ -70,7 +70,7 @@ pub trait FileAccuracySource {
 
 impl FileAccuracySource for poq::Reader<BufReader<File>> {
     fn open_file_accuracy_source<P: AsRef<Path>>(path: P) -> Result<Box<AccuracySource>> {
-        Ok(Box::new(try!(poq::Reader::from_path(path))))
+        Ok(Box::new(poq::Reader::from_path(path)?))
     }
 }
 
@@ -88,10 +88,7 @@ impl CombinedSource {
         source: Box<Source>,
         mut accuracy_source: Box<AccuracySource>,
     ) -> Result<CombinedSource> {
-        let accuracies = (
-            try!(accuracy_source.source()),
-            try!(accuracy_source.source()),
-        );
+        let accuracies = (accuracy_source.source()?, accuracy_source.source()?);
         Ok(CombinedSource {
             source: source,
             accuracy_source: accuracy_source,
@@ -102,7 +99,7 @@ impl CombinedSource {
 
 impl Source for CombinedSource {
     fn source(&mut self) -> Result<Option<Point>> {
-        let mut point = match try!(self.source.source()) {
+        let mut point = match self.source.source()? {
             Some(point) => point,
             None => return Ok(None),
         };
@@ -116,7 +113,7 @@ impl Source for CombinedSource {
         loop {
             if point.time > self.accuracies.1.unwrap().time {
                 self.accuracies.0 = self.accuracies.1;
-                self.accuracies.1 = try!(self.accuracy_source.source());
+                self.accuracies.1 = self.accuracy_source.source()?;
             } else {
                 break;
             }
