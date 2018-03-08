@@ -1,8 +1,24 @@
 //! Interpolate between two position points.
 
-use {Error, Result};
+use failure;
 use point::Point;
 use source::Source;
+
+/// Errors for interpolation.
+#[derive(Clone, Copy, Debug, Fail)]
+pub enum Error {
+    /// Error returned when trying to extrapolate with only one point in the source.
+    #[fail(display = "Cannot interpolate in a source with only one point")]
+    OnePoint,
+
+    /// The time value is below the minimum time of the source.
+    #[fail(display = "Time value is below minimum of the source: {}", _0)]
+    TimeBelowMinimum(f64),
+
+    /// The time value is above the maximum time of the source.
+    #[fail(display = "Time value is above the maximum of the source: {}", _0)]
+    TimeAboveMaximum(f64),
+}
 
 /// Structure that handles the interpolation.
 #[derive(Debug)]
@@ -23,17 +39,13 @@ impl Interpolator {
     /// let reader = sbet::Reader::from_path("data/2-points.sbet").unwrap();
     /// let interpolator = Interpolator::new(Box::new(reader)).unwrap();
     /// ```
-    pub fn new(mut source: Box<Source>) -> Result<Interpolator> {
+    pub fn new(mut source: Box<Source>) -> Result<Interpolator, failure::Error> {
         let mut points = Vec::with_capacity(2);
         for _ in 0..2 {
             points.push(match source.source()? {
                 Some(point) => point,
                 None => {
-                    return Err(Error::Extrapolation(
-                        "Source must have at least two points for \
-                                                     interpolation"
-                            .to_string(),
-                    ))
+                    return Err(Error::OnePoint.into());
                 }
             });
         }
@@ -55,16 +67,12 @@ impl Interpolator {
     /// let mut interpolator = Interpolator::new(Box::new(reader)).unwrap();
     /// let point = interpolator.interpolate(1.516310048360710e5).unwrap();
     /// ```
-    pub fn interpolate(&mut self, time: f64) -> Result<Point> {
+    pub fn interpolate(&mut self, time: f64) -> Result<Point, failure::Error> {
         loop {
             assert!(self.index != 0 && self.index != self.points.len());
             if time < self.points[self.index - 1].time {
                 if self.index == 1 {
-                    return Err(Error::Extrapolation(format!(
-                        "Time {} is below the minimum time \
-                                                             of this source",
-                        time
-                    )));
+                    return Err(Error::TimeBelowMinimum(time).into());
                 } else {
                     self.index -= 1;
                 }
@@ -78,11 +86,7 @@ impl Interpolator {
                             self.index += 1;
                         }
                         None => {
-                            return Err(Error::Extrapolation(format!(
-                                "Time {} is above the \
-                                                                     maximum time of this source",
-                                time
-                            )))
+                            return Err(Error::TimeAboveMaximum(time).into());
                         }
                     }
                 }

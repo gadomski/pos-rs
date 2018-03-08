@@ -12,6 +12,7 @@ exclude = ["data/*"]
 
 [dependencies]
 byteorder = "1.2"
+failure = "0.1"
 
 [profile.test]
 opt-level = 2

@@ -2,9 +2,8 @@
 //!
 //! These are Riegl-specific GNSS/IMU data files.
 
-use {Error, Result};
-
 use byteorder::{LittleEndian, ReadBytesExt};
+use failure;
 use point::Point;
 use source::Source;
 use std::fmt::Debug;
@@ -13,6 +12,18 @@ use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::iter::IntoIterator;
 use std::path::Path;
 use units::Radians;
+
+/// Pof errors.
+#[derive(Clone, Copy, Debug, Fail)]
+pub enum Error {
+    /// The time unit code is invalid.
+    #[fail(display = "The time unit code is invalid: {}", _0)]
+    TimeUnit(u8),
+
+    /// The time info code is invalid.
+    #[fail(display = "The time info code is invalid: {}", _0)]
+    TimeInfo(u8),
+}
 
 /// A pos file reader.
 #[derive(Debug)]
@@ -96,14 +107,14 @@ impl Reader<BufReader<File>> {
     /// use pos::pof::Reader;
     /// let reader = Reader::from_path("data/sbet_mission_1.pof").unwrap();
     /// ```
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, failure::Error> {
         let reader = BufReader::new(File::open(path)?);
         Reader::new(reader)
     }
 }
 
 impl<R: Read + Seek> Reader<R> {
-    fn new(mut reader: R) -> Result<Reader<R>> {
+    fn new(mut reader: R) -> Result<Reader<R>, failure::Error> {
         let mut preamble = [0; 27];
         reader.read_exact(&mut preamble)?;
 
@@ -181,7 +192,7 @@ impl<R: Read + Seek> Reader<R> {
     /// let mut reader = Reader::from_path("data/sbet_mission_1.pof").unwrap();
     /// let point = reader.read_point().unwrap();
     /// ```
-    pub fn read_point(&mut self) -> Result<Option<Point>> {
+    pub fn read_point(&mut self) -> Result<Option<Point>, failure::Error> {
         if self.position == self.entries {
             return Ok(None);
         }
@@ -276,12 +287,12 @@ pub enum TimeUnit {
 }
 
 impl TimeUnit {
-    fn from_u8(n: u8) -> Result<TimeUnit> {
+    fn from_u8(n: u8) -> Result<TimeUnit, Error> {
         match n {
             0 => Ok(TimeUnit::Normalized),
             1 => Ok(TimeUnit::Day),
             2 => Ok(TimeUnit::Week),
-            _ => Err(Error::InvalidTimeUnit(n)),
+            _ => Err(Error::TimeUnit(n)),
         }
     }
 }
@@ -298,18 +309,18 @@ pub enum TimeInfo {
 }
 
 impl TimeInfo {
-    fn from_u8(n: u8) -> Result<TimeInfo> {
+    fn from_u8(n: u8) -> Result<TimeInfo, Error> {
         match n {
             0 => Ok(TimeInfo::Gps),
             1 => Ok(TimeInfo::Utc),
             2 => Ok(TimeInfo::Unknown),
-            _ => Err(Error::InvalidTimeInfo(n)),
+            _ => Err(Error::TimeInfo(n)),
         }
     }
 }
 
 impl<R: Debug + Seek + Read> Source for Reader<R> {
-    fn source(&mut self) -> Result<Option<Point>> {
+    fn source(&mut self) -> Result<Option<Point>, failure::Error> {
         self.read_point()
     }
 }
