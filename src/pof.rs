@@ -5,7 +5,6 @@
 use {Error, Result};
 
 use byteorder::{LittleEndian, ReadBytesExt};
-use io::read_full;
 use point::Point;
 use source::Source;
 use std::fmt::Debug;
@@ -106,7 +105,7 @@ impl Reader<BufReader<File>> {
 impl<R: Read + Seek> Reader<R> {
     fn new(mut reader: R) -> Result<Reader<R>> {
         let mut preamble = [0; 27];
-        read_full(&mut reader, &mut preamble)?;
+        reader.read_exact(&mut preamble)?;
 
         let major = reader.read_u16::<LittleEndian>()?;
         let minor = reader.read_u16::<LittleEndian>()?;
@@ -130,19 +129,19 @@ impl<R: Read + Seek> Reader<R> {
         let timeinfo = TimeInfo::from_u8(reader.read_u8()?)?;
 
         let mut timezone = [0; 16];
-        read_full(&mut reader, &mut timezone)?;
+        reader.read_exact(&mut timezone)?;
         let mut location = [0; 16];
-        read_full(&mut reader, &mut location)?;
+        reader.read_exact(&mut location)?;
         let mut device = [0; 32];
-        read_full(&mut reader, &mut device)?;
+        reader.read_exact(&mut device)?;
         let mut reserved = [0; 32];
-        read_full(&mut reader, &mut reserved)?;
+        reader.read_exact(&mut reserved)?;
         let mut project = [0; 32];
-        read_full(&mut reader, &mut project)?;
+        reader.read_exact(&mut project)?;
         let mut company = [0; 32];
-        read_full(&mut reader, &mut company)?;
+        reader.read_exact(&mut company)?;
         let mut reserved2 = [0; 32];
-        read_full(&mut reader, &mut reserved2)?;
+        reader.read_exact(&mut reserved2)?;
 
         let _ = reader.seek(SeekFrom::Start(data_offset as u64))?;
 

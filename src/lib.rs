@@ -12,7 +12,6 @@
 
 extern crate byteorder;
 
-mod io;
 pub mod error;
 pub mod interpolate;
 pub mod pof;

@@ -1,10 +1,8 @@
 //! Position and orientation quality files.
 
-use {Error, Result};
+use Result;
 
-use byteorder;
 use byteorder::{LittleEndian, ReadBytesExt};
-use io::read_full;
 use point::{Accuracy, SatelliteCount};
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
@@ -40,8 +38,8 @@ impl Reader<BufReader<File>> {
 
 impl<R: Seek + Read> Reader<R> {
     fn new(mut reader: R) -> Result<Reader<R>> {
-        let ref mut preamble = [0; 35];
-        read_full(&mut reader, preamble)?;
+        let mut preamble = [0; 35];
+        reader.read_exact(&mut preamble)?;
 
         let major = reader.read_u16::<LittleEndian>()?;
         let minor = reader.read_u16::<LittleEndian>()?;
@@ -69,10 +67,16 @@ impl<R: Seek + Read> Reader<R> {
     /// let accuracy = reader.read_accuracy().unwrap();
     /// ```
     pub fn read_accuracy(&mut self) -> Result<Option<Accuracy>> {
+        use std::io::ErrorKind;
+
         let time = match self.reader.read_f64::<LittleEndian>() {
             Ok(time) => time,
-            Err(byteorder::Error::UnexpectedEOF) => return Ok(None),
-            Err(err) => return Err(Error::from(err)),
+            Err(err) => {
+                match err.kind() {
+                    ErrorKind::UnexpectedEof => return Ok(None),
+                    _ => return Err(err.into()),
+                }
+            }
         };
         let north = self.reader.read_f64::<LittleEndian>()?;
         let east = self.reader.read_f64::<LittleEndian>()?;

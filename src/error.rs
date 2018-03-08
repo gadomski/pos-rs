@@ -1,6 +1,5 @@
 //! Our custom errors.
 
-use byteorder;
 use std::error;
 use std::fmt;
 use std::io;
@@ -9,8 +8,6 @@ use std::num::{ParseFloatError, ParseIntError};
 /// Our custom error enum.
 #[derive(Debug)]
 pub enum Error {
-    /// Wrapper around `byteorder::Error`.
-    Byteorder(byteorder::Error),
     /// This isn't interpolation, this is extrapolation.
     Extrapolation(String),
     /// Cannot convert the u8 into a `TimeInfo`.
@@ -28,7 +25,6 @@ pub enum Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::Byteorder(ref err) => err.description(),
             Error::Extrapolation(_) => "extrapolation",
             Error::InvalidTimeInfo(_) => "invalid time info",
             Error::InvalidTimeUnit(_) => "invalid time unit",
@@ -40,7 +36,6 @@ impl error::Error for Error {
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
-            Error::Byteorder(ref err) => Some(err),
             Error::Io(ref err) => Some(err),
             Error::ParseFloat(ref err) => Some(err),
             Error::ParseInt(ref err) => Some(err),
@@ -52,7 +47,6 @@ impl error::Error for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::Byteorder(ref err) => write!(f, "byteorder error: {}", err),
             Error::Extrapolation(ref s) => write!(f, "extrapolation error: {}", s),
             Error::InvalidTimeInfo(n) => write!(f, "invalid time info: {}", n),
             Error::InvalidTimeUnit(n) => write!(f, "invalid time unit: {}", n),
@@ -60,12 +54,6 @@ impl fmt::Display for Error {
             Error::ParseFloat(ref err) => write!(f, "parse float error: {}", err),
             Error::ParseInt(ref err) => write!(f, "parse int error: {}", err),
         }
-    }
-}
-
-impl From<byteorder::Error> for Error {
-    fn from(err: byteorder::Error) -> Error {
-        Error::Byteorder(err)
     }
 }
 

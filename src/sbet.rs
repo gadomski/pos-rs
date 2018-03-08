@@ -1,8 +1,7 @@
 //! SBET file format.
 
-use {Error, Result};
+use Result;
 
-use byteorder;
 use byteorder::{LittleEndian, ReadBytesExt};
 use point::Point;
 use source::Source;
@@ -47,10 +46,16 @@ impl<R: Read> Reader<R> {
     /// let point = reader.read_point().unwrap().unwrap();
     /// ```
     pub fn read_point(&mut self) -> Result<Option<Point>> {
+        use std::io::ErrorKind;
+
         let time = match self.reader.read_f64::<LittleEndian>() {
             Ok(time) => time,
-            Err(byteorder::Error::UnexpectedEOF) => return Ok(None),
-            Err(err) => return Err(Error::from(err)),
+            Err(err) => {
+                match err.kind() {
+                    ErrorKind::UnexpectedEof => return Ok(None),
+                    _ => return Err(err.into()),
+                }
+            }
         };
         Ok(Some(Point {
             time: time,
