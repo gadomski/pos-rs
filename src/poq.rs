@@ -1,8 +1,7 @@
 //! Position and orientation quality files.
 
-use Result;
-
 use byteorder::{LittleEndian, ReadBytesExt};
+use failure::Error;
 use point::{Accuracy, SatelliteCount};
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
@@ -30,14 +29,15 @@ impl Reader<BufReader<File>> {
     /// use pos::poq::Reader;
     /// let reader = Reader::from_path("data/sbet_mission_1.poq").unwrap();
     /// ```
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
         let reader = BufReader::new(File::open(path)?);
         Reader::new(reader)
     }
 }
 
 impl<R: Seek + Read> Reader<R> {
-    fn new(mut reader: R) -> Result<Reader<R>> {
+    // TODO can I make this just an io error on return?
+    fn new(mut reader: R) -> Result<Reader<R>, Error> {
         let mut preamble = [0; 35];
         reader.read_exact(&mut preamble)?;
 
@@ -66,7 +66,7 @@ impl<R: Seek + Read> Reader<R> {
     /// let mut reader = Reader::from_path("data/sbet_mission_1.poq").unwrap();
     /// let accuracy = reader.read_accuracy().unwrap();
     /// ```
-    pub fn read_accuracy(&mut self) -> Result<Option<Accuracy>> {
+    pub fn read_accuracy(&mut self) -> Result<Option<Accuracy>, Error> {
         use std::io::ErrorKind;
 
         let time = match self.reader.read_f64::<LittleEndian>() {

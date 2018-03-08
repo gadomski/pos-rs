@@ -11,8 +11,9 @@
         unused_qualifications, unused_results, variant_size_differences)]
 
 extern crate byteorder;
+#[macro_use]
+extern crate failure;
 
-pub mod error;
 pub mod interpolate;
 pub mod pof;
 pub mod point;
@@ -22,13 +23,7 @@ pub mod sbet;
 pub mod source;
 pub mod units;
 
-pub use error::Error;
 pub use interpolate::Interpolator;
 pub use point::{Accuracy, Point};
 pub use source::{AccuracySource, CombinedSource, FileAccuracySource, FileSource, Source};
-
-use std::result;
 pub use units::Radians;
-
-/// Our custom result type.
-pub type Result<T> = result::Result<T, Error>;

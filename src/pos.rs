@@ -1,6 +1,6 @@
 //! Pos files are ASCII position files.
 
-use Result;
+use failure::Error;
 use point::Point;
 use source::Source;
 use std::fmt::Debug;
@@ -24,7 +24,7 @@ impl Reader<BufReader<File>> {
     /// use pos::pos::Reader;
     /// let reader = Reader::from_path("data/0916_2014_ie.pos").unwrap();
     /// ```
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
         let mut reader = BufReader::new(File::open(path)?);
         let ref mut header: String = String::new();
         let _ = reader.read_line(header)?;
@@ -42,7 +42,7 @@ impl<R: BufRead> Reader<R> {
     /// let mut reader = Reader::from_path("data/0916_2014_ie.pos").unwrap();
     /// let point = reader.read_point().unwrap();
     /// ```
-    pub fn read_point(&mut self) -> Result<Option<Point>> {
+    pub fn read_point(&mut self) -> Result<Option<Point>, Error> {
         let mut line = String::new();
         let _ = self.reader.read_line(&mut line)?;
         let values: Vec<_> = line.split_whitespace().map(|s| s.clone()).collect();
@@ -84,7 +84,7 @@ impl<R: BufRead> Iterator for ReaderIterator<R> {
 }
 
 impl<R: Debug + BufRead> Source for Reader<R> {
-    fn source(&mut self) -> Result<Option<Point>> {
+    fn source(&mut self) -> Result<Option<Point>, Error> {
         self.read_point()
     }
 }

@@ -1,8 +1,7 @@
 //! SBET file format.
 
-use Result;
-
 use byteorder::{LittleEndian, ReadBytesExt};
+use failure::Error;
 use point::Point;
 use source::Source;
 use std::fmt::Debug;
@@ -27,7 +26,7 @@ impl Reader<BufReader<File>> {
     /// use pos::sbet::Reader;
     /// let reader = Reader::from_path("data/2-points.sbet").unwrap();
     /// ```
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>> {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
         Ok(Reader { reader: BufReader::new(File::open(path)?) })
     }
 }
@@ -45,7 +44,7 @@ impl<R: Read> Reader<R> {
     /// let mut reader = Reader::from_path("data/2-points.sbet").unwrap();
     /// let point = reader.read_point().unwrap().unwrap();
     /// ```
-    pub fn read_point(&mut self) -> Result<Option<Point>> {
+    pub fn read_point(&mut self) -> Result<Option<Point>, Error> {
         use std::io::ErrorKind;
 
         let time = match self.reader.read_f64::<LittleEndian>() {
@@ -102,7 +101,7 @@ impl<R: Read> Iterator for ReaderIterator<R> {
 }
 
 impl<R: Debug + Read> Source for Reader<R> {
-    fn source(&mut self) -> Result<Option<Point>> {
+    fn source(&mut self) -> Result<Option<Point>, Error> {
         self.read_point()
     }
 }
