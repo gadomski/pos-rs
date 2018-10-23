@@ -1,5 +1,7 @@
 # pos-rs
 
+![Documentation](https://docs.rs/pos/badge.svg)
+
 Small rust library for reading GNSS/IMU position and accuracy data.
 
 Currently supported formats:
