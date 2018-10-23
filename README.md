@@ -1,6 +1,7 @@
 # pos-rs
 
 ![Documentation](https://docs.rs/pos/badge.svg)
+[![Build Status](https://travis-ci.org/gadomski/pos-rs.svg?branch=master)](https://travis-ci.org/gadomski/pos-rs)
 
 Small rust library for reading GNSS/IMU position and accuracy data.
 
