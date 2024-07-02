@@ -188,20 +188,20 @@ mod tests {
             time: 0.0,
             roll: Radians(0.0),
             pitch: Radians(0.0),
-            yaw: Radians(175.0f64.to_radians()),
+            yaw: Radians(355.0f64.to_radians()),
             ..Default::default()
         };
         let point_2 = Point {
             time: 1.0,
             roll: Radians(0.0),
             pitch: Radians(0.0),
-            yaw: Radians(-175.0f64.to_radians()),
+            yaw: Radians(5.0f64.to_radians()),
             ..Default::default()
         };
 
         let interpolated = point_1.interpolate(&point_2, 0.5);
         dbg!(interpolated.yaw);
-        let expected_yaw = 180.0f64.to_radians();
+        let expected_yaw = 0.0f64.to_radians();
         let calculated_diff = (interpolated.yaw.0 - expected_yaw).abs();
 
         assert!(calculated_diff < 0.0001);
