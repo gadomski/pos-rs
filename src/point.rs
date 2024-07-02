@@ -1,11 +1,26 @@
 //! Points.
 
+use std::f64::consts::PI;
 use crate::units::Radians;
 
+const TWO_PI: f64 = PI * 2.0;
 
 macro_rules! interpolate {
     ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
         $lhs.$var + $factor * ($rhs.$var - $lhs.$var)
+    }}
+}
+
+macro_rules! interpolate_angle {
+    ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
+        let mut diff = $rhs.$var.0 - $lhs.$var.0;
+        if diff > PI {
+            diff = diff - TWO_PI;
+        } else if diff < -PI {
+            diff = diff + TWO_PI;
+        }
+
+        Radians((TWO_PI + $lhs.$var.0 + $factor * diff) % TWO_PI)
     }}
 }
 
