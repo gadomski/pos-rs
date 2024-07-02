@@ -2,14 +2,14 @@
 
 use byteorder::{LittleEndian, ReadBytesExt};
 use failure::Error;
-use point::Point;
-use source::Source;
+use crate::point::Point;
+use crate::source::Source;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::iter::IntoIterator;
 use std::path::Path;
-use units::Radians;
+use crate::units::Radians;
 
 /// An SBET reader.
 #[derive(Debug)]

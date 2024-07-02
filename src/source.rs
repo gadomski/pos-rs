@@ -1,9 +1,9 @@
 //! Sources of position points.
 
 use failure::Error;
-use pof;
-use point::{Accuracy, Point};
-use poq;
+use crate::pof;
+use crate::point::{Accuracy, Point};
+use crate::poq;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
@@ -16,7 +16,7 @@ pub trait Source: Debug {
     fn source(&mut self) -> Result<Option<Point>, Error>;
 }
 
-impl IntoIterator for Box<Source> {
+impl IntoIterator for Box<dyn Source> {
     type Item = Point;
     type IntoIter = SourceIterator;
     fn into_iter(self) -> Self::IntoIter {
@@ -27,7 +27,7 @@ impl IntoIterator for Box<Source> {
 /// An iterator over a boxed point source.
 #[derive(Debug)]
 pub struct SourceIterator {
-    source: Box<Source>,
+    source: Box<dyn Source>,
 }
 
 impl Iterator for SourceIterator {
@@ -52,11 +52,11 @@ impl<R: Debug + Seek + Read> AccuracySource for poq::Reader<R> {
 /// A source of points that is based in a file.
 pub trait FileSource {
     /// Open a new file source from a file.
-    fn open_file_source<P: AsRef<Path>>(path: P) -> Result<Box<Source>, Error>;
+    fn open_file_source<P: AsRef<Path>>(path: P) -> Result<Box<dyn Source>, Error>;
 }
 
 impl FileSource for pof::Reader<BufReader<File>> {
-    fn open_file_source<P: AsRef<Path>>(path: P) -> Result<Box<Source>, Error> {
+    fn open_file_source<P: AsRef<Path>>(path: P) -> Result<Box<dyn Source>, Error> {
         Ok(Box::new(pof::Reader::from_path(path)?))
     }
 }
@@ -64,11 +64,11 @@ impl FileSource for pof::Reader<BufReader<File>> {
 /// A source of accuracy information
 pub trait FileAccuracySource {
     /// Opens a new accuracy source from a file.
-    fn open_file_accuracy_source<P: AsRef<Path>>(path: P) -> Result<Box<AccuracySource>, Error>;
+    fn open_file_accuracy_source<P: AsRef<Path>>(path: P) -> Result<Box<dyn AccuracySource>, Error>;
 }
 
 impl FileAccuracySource for poq::Reader<BufReader<File>> {
-    fn open_file_accuracy_source<P: AsRef<Path>>(path: P) -> Result<Box<AccuracySource>, Error> {
+    fn open_file_accuracy_source<P: AsRef<Path>>(path: P) -> Result<Box<dyn AccuracySource>, Error> {
         Ok(Box::new(poq::Reader::from_path(path)?))
     }
 }
@@ -76,16 +76,16 @@ impl FileAccuracySource for poq::Reader<BufReader<File>> {
 /// A source of points that includes accuracy information.
 #[derive(Debug)]
 pub struct CombinedSource {
-    source: Box<Source>,
-    accuracy_source: Box<AccuracySource>,
+    source: Box<dyn Source>,
+    accuracy_source: Box<dyn AccuracySource>,
     accuracies: (Option<Accuracy>, Option<Accuracy>),
 }
 
 impl CombinedSource {
     /// Creates a new combined source from two boxes.
     pub fn new(
-        source: Box<Source>,
-        mut accuracy_source: Box<AccuracySource>,
+        source: Box<dyn Source>,
+        mut accuracy_source: Box<dyn AccuracySource>,
     ) -> Result<CombinedSource, Error> {
         let accuracies = (accuracy_source.source()?, accuracy_source.source()?);
         Ok(CombinedSource {

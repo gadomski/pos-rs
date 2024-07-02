@@ -1,6 +1,7 @@
 //! Points.
 
-use units::Radians;
+use crate::units::Radians;
+
 
 macro_rules! interpolate {
     ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
@@ -69,9 +70,9 @@ impl Point {
             longitude: interpolate!(self, other, factor, longitude),
             latitude: interpolate!(self, other, factor, latitude),
             altitude: interpolate!(self, other, factor, altitude),
-            roll: interpolate!(self, other, factor, roll),
-            pitch: interpolate!(self, other, factor, pitch),
-            yaw: interpolate!(self, other, factor, yaw),
+            roll: interpolate_angle!(self, other, factor, roll),
+            pitch: interpolate_angle!(self, other, factor, pitch),
+            yaw: interpolate_angle!(self, other, factor, yaw),
             distance: interpolate_optional!(self, other, factor, distance),
             x_velocity: interpolate_optional!(self, other, factor, x_velocity),
             y_velocity: interpolate_optional!(self, other, factor, y_velocity),
