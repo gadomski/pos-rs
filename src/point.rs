@@ -11,7 +11,7 @@ macro_rules! interpolate {
     }}
 }
 
-macro_rules! interpolate_angle {
+macro_rules! interpolate_euler {
     ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
         let mut diff = $rhs.$var.0 - $lhs.$var.0;
         if diff > PI {
@@ -85,9 +85,9 @@ impl Point {
             longitude: interpolate!(self, other, factor, longitude),
             latitude: interpolate!(self, other, factor, latitude),
             altitude: interpolate!(self, other, factor, altitude),
-            roll: interpolate_angle!(self, other, factor, roll),
-            pitch: interpolate_angle!(self, other, factor, pitch),
-            yaw: interpolate_angle!(self, other, factor, yaw),
+            roll: interpolate_euler!(self, other, factor, roll),
+            pitch: interpolate_euler!(self, other, factor, pitch),
+            yaw: interpolate_euler!(self, other, factor, yaw),
             distance: interpolate_optional!(self, other, factor, distance),
             x_velocity: interpolate_optional!(self, other, factor, x_velocity),
             y_velocity: interpolate_optional!(self, other, factor, y_velocity),
@@ -174,5 +174,36 @@ pub enum SatelliteCount {
 impl Default for SatelliteCount {
     fn default() -> SatelliteCount {
         SatelliteCount::Unspecified(0)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    // Note this useful idiom: importing names from outer (for mod tests) scope.
+    use super::*;
+
+    #[test]
+    fn test_interpolate_angle() {
+        let point_1 = Point {
+            time: 0.0,
+            roll: Radians(0.0),
+            pitch: Radians(0.0),
+            yaw: Radians(175.0f64.to_radians()),
+            ..Default::default()
+        };
+        let point_2 = Point {
+            time: 1.0,
+            roll: Radians(0.0),
+            pitch: Radians(0.0),
+            yaw: Radians(-175.0f64.to_radians()),
+            ..Default::default()
+        };
+
+        let interpolated = point_1.interpolate(&point_2, 0.5);
+        dbg!(interpolated.yaw);
+        let expected_yaw = 180.0f64.to_radians();
+        let calculated_diff = (interpolated.yaw.0 - expected_yaw).abs();
+
+        assert!(calculated_diff < 0.0001);
     }
 }
