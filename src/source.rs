@@ -1,9 +1,9 @@
 //! Sources of position points.
 
+use crate::pof;
+use crate::point::{Accuracy, Point};
+use crate::poq;
 use failure::Error;
-use pof;
-use point::{Accuracy, Point};
-use poq;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};

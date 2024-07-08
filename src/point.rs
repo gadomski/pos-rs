@@ -1,11 +1,11 @@
 //! Points.
 
-use units::Radians;
+use crate::units::Radians;
 
 macro_rules! interpolate {
     ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
         $lhs.$var + $factor * ($rhs.$var - $lhs.$var)
-    }}
+    }};
 }
 
 macro_rules! interpolate_optional {
@@ -19,7 +19,7 @@ macro_rules! interpolate_optional {
         } else {
             None
         }
-    }}
+    }};
 }
 
 /// A position point.
@@ -93,7 +93,6 @@ impl Point {
                 None
             },
         }
-
     }
 }
 

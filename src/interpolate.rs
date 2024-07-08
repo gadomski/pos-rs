@@ -1,8 +1,8 @@
 //! Interpolate between two position points.
 
-use failure;
-use point::Point;
-use source::Source;
+use crate::point::Point;
+use crate::source::Source;
+use failure::Fail;
 
 /// Errors for interpolation.
 #[derive(Clone, Copy, Debug, Fail)]
@@ -101,8 +101,7 @@ impl Interpolator {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    use sbet;
+    use crate::sbet;
 
     #[test]
     fn interp_sbet() {

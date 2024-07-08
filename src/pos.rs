@@ -1,13 +1,13 @@
 //! Pos files are ASCII position files.
 
+use crate::point::Point;
+use crate::source::Source;
+use crate::units::Radians;
 use failure::Error;
-use point::Point;
-use source::Source;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
-use units::Radians;
 
 /// A pos reader.
 #[derive(Debug)]

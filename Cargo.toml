@@ -9,6 +9,7 @@ homepage = "https://github.com/gadomski/pos-rs"
 repository = "https://github.com/gadomski/pos-rs"
 keywords = ["gis", "gnss", "imu", "sbet"]
 exclude = ["data/*"]
+edition = "2021"
 
 [dependencies]
 byteorder = "1.2"

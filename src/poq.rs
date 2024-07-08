@@ -1,13 +1,13 @@
 //! Position and orientation quality files.
 
+use crate::point::{Accuracy, SatelliteCount};
+use crate::units::Radians;
 use byteorder::{LittleEndian, ReadBytesExt};
 use failure::Error;
-use point::{Accuracy, SatelliteCount};
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
 use std::iter::IntoIterator;
 use std::path::Path;
-use units::Radians;
 
 /// A poq file reader.
 #[derive(Debug)]
@@ -71,12 +71,10 @@ impl<R: Seek + Read> Reader<R> {
 
         let time = match self.reader.read_f64::<LittleEndian>() {
             Ok(time) => time,
-            Err(err) => {
-                match err.kind() {
-                    ErrorKind::UnexpectedEof => return Ok(None),
-                    _ => return Err(err.into()),
-                }
-            }
+            Err(err) => match err.kind() {
+                ErrorKind::UnexpectedEof => return Ok(None),
+                _ => return Err(err.into()),
+            },
         };
         let north = self.reader.read_f64::<LittleEndian>()?;
         let east = self.reader.read_f64::<LittleEndian>()?;

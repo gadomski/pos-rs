@@ -1,15 +1,15 @@
 //! SBET file format.
 
+use crate::point::Point;
+use crate::source::Source;
+use crate::units::Radians;
 use byteorder::{LittleEndian, ReadBytesExt};
 use failure::Error;
-use point::Point;
-use source::Source;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read};
 use std::iter::IntoIterator;
 use std::path::Path;
-use units::Radians;
 
 /// An SBET reader.
 #[derive(Debug)]
@@ -27,7 +27,9 @@ impl Reader<BufReader<File>> {
     /// let reader = Reader::from_path("data/2-points.sbet").unwrap();
     /// ```
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
-        Ok(Reader { reader: BufReader::new(File::open(path)?) })
+        Ok(Reader {
+            reader: BufReader::new(File::open(path)?),
+        })
     }
 }
 
@@ -49,12 +51,10 @@ impl<R: Read> Reader<R> {
 
         let time = match self.reader.read_f64::<LittleEndian>() {
             Ok(time) => time,
-            Err(err) => {
-                match err.kind() {
-                    ErrorKind::UnexpectedEof => return Ok(None),
-                    _ => return Err(err.into()),
-                }
-            }
+            Err(err) => match err.kind() {
+                ErrorKind::UnexpectedEof => return Ok(None),
+                _ => return Err(err.into()),
+            },
         };
         Ok(Some(Point {
             time: time,

@@ -2,16 +2,17 @@
 //!
 //! These are Riegl-specific GNSS/IMU data files.
 
+use crate::point::Point;
+use crate::source::Source;
+use crate::units::Radians;
 use byteorder::{LittleEndian, ReadBytesExt};
 use failure;
-use point::Point;
-use source::Source;
+use failure::Fail;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::iter::IntoIterator;
 use std::path::Path;
-use units::Radians;
 
 /// Pof errors.
 #[derive(Clone, Copy, Debug, Fail)]
