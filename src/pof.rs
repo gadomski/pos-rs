@@ -158,29 +158,29 @@ impl<R: Read + Seek> Reader<R> {
         let _ = reader.seek(SeekFrom::Start(data_offset as u64))?;
 
         Ok(Reader {
-            avgint: avgint,
-            company: company,
-            day: day,
-            device: device,
-            devint: devint,
-            entries: entries,
-            location: location,
-            maxalt: maxalt,
-            maxint: maxint,
-            maxlat: maxlat,
-            maxlon: maxlon,
-            minalt: minalt,
-            minlat: minlat,
-            minlon: minlon,
-            month: month,
+            avgint,
+            company,
+            day,
+            device,
+            devint,
+            entries,
+            location,
+            maxalt,
+            maxint,
+            maxlat,
+            maxlon,
+            minalt,
+            minlat,
+            minlon,
+            month,
             position: 0,
-            project: project,
-            reader: reader,
-            timeinfo: timeinfo,
-            timeunit: timeunit,
-            timezone: timezone,
-            version: version,
-            year: year,
+            project,
+            reader,
+            timeinfo,
+            timeunit,
+            timezone,
+            version,
+            year,
         })
     }
 
@@ -214,14 +214,14 @@ impl<R: Read + Seek> Reader<R> {
         self.position += 1;
 
         Ok(Some(Point {
-            time: time,
+            time,
             longitude: Radians::from_degrees(longitude),
             latitude: Radians::from_degrees(latitude),
-            altitude: altitude,
+            altitude,
             roll: Radians::from_degrees(roll),
             pitch: Radians::from_degrees(pitch),
             yaw: Radians::from_degrees(yaw),
-            distance: distance,
+            distance,
             ..Default::default()
         }))
     }
@@ -265,10 +265,7 @@ impl Version {
     /// Version::new(1, 1);
     /// ```
     pub fn new(major: u16, minor: u16) -> Version {
-        Version {
-            major: major,
-            minor: minor,
-        }
+        Version { major, minor }
     }
 
     fn has_distance(&self) -> bool {

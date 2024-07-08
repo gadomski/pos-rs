@@ -50,8 +50,8 @@ impl Interpolator {
             });
         }
         Ok(Interpolator {
-            points: points,
-            source: source,
+            points,
+            source,
             index: 1,
         })
     }

@@ -57,7 +57,7 @@ impl<R: Read> Reader<R> {
             },
         };
         Ok(Some(Point {
-            time: time,
+            time,
             latitude: Radians(self.reader.read_f64::<LittleEndian>()?),
             longitude: Radians(self.reader.read_f64::<LittleEndian>()?),
             altitude: self.reader.read_f64::<LittleEndian>()?,

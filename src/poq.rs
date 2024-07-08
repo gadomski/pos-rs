@@ -49,11 +49,11 @@ impl<R: Seek + Read> Reader<R> {
         let devint = reader.read_f64::<LittleEndian>()?;
 
         Ok(Reader {
-            avgint: avgint,
-            devint: devint,
-            maxint: maxint,
-            reader: reader,
-            version: version,
+            avgint,
+            devint,
+            maxint,
+            reader,
+            version,
         })
     }
 
@@ -95,14 +95,14 @@ impl<R: Seek + Read> Reader<R> {
         };
 
         Ok(Some(Accuracy {
-            time: time,
+            time,
             y: north,
             x: east,
             z: down,
             roll: Radians::from_degrees(roll),
             pitch: Radians::from_degrees(pitch),
             yaw: Radians::from_degrees(yaw),
-            pdop: pdop,
+            pdop,
             satellite_count: Some(satellite_count),
         }))
     }
@@ -146,10 +146,7 @@ impl Version {
     /// Version::new(1, 1);
     /// ```
     pub fn new(major: u16, minor: u16) -> Version {
-        Version {
-            major: major,
-            minor: minor,
-        }
+        Version { major, minor }
     }
 
     fn specifies_satellite_count(&self) -> bool {

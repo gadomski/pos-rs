@@ -92,9 +92,9 @@ impl CombinedSource {
     ) -> Result<CombinedSource, Error> {
         let accuracies = (accuracy_source.source()?, accuracy_source.source()?);
         Ok(CombinedSource {
-            source: source,
-            accuracy_source: accuracy_source,
-            accuracies: accuracies,
+            source,
+            accuracy_source,
+            accuracies,
         })
     }
 }

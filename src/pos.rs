@@ -26,9 +26,9 @@ impl Reader<BufReader<File>> {
     /// ```
     pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
         let mut reader = BufReader::new(File::open(path)?);
-        let ref mut header: String = String::new();
-        let _ = reader.read_line(header)?;
-        Ok(Reader { reader: reader })
+        let mut header = String::new();
+        let _ = reader.read_line(&mut header)?;
+        Ok(Reader { reader })
     }
 }
 
