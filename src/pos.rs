@@ -1,13 +1,13 @@
 //! Pos files are ASCII position files.
 
 use failure::Error;
-use point::Point;
-use source::Source;
+use crate::point::Point;
+use crate::source::Source;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
-use units::Radians;
+use crate::units::Radians;
 
 /// A pos reader.
 #[derive(Debug)]
@@ -45,7 +45,7 @@ impl<R: BufRead> Reader<R> {
     pub fn read_point(&mut self) -> Result<Option<Point>, Error> {
         let mut line = String::new();
         let _ = self.reader.read_line(&mut line)?;
-        let values: Vec<_> = line.split_whitespace().map(|s| s.clone()).collect();
+        let values: Vec<_> = line.split_whitespace().map(|s| s).collect();
         if values.is_empty() {
             return Ok(None);
         }

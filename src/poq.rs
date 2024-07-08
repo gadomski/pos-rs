@@ -2,12 +2,12 @@
 
 use byteorder::{LittleEndian, ReadBytesExt};
 use failure::Error;
-use point::{Accuracy, SatelliteCount};
+use crate::point::{Accuracy, SatelliteCount};
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
 use std::iter::IntoIterator;
 use std::path::Path;
-use units::Radians;
+use crate::units::Radians;
 
 /// A poq file reader.
 #[derive(Debug)]

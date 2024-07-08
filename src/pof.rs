@@ -4,14 +4,14 @@
 
 use byteorder::{LittleEndian, ReadBytesExt};
 use failure;
-use point::Point;
-use source::Source;
+use crate::point::Point;
+use crate::source::Source;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::iter::IntoIterator;
 use std::path::Path;
-use units::Radians;
+use crate::units::Radians;
 
 /// Pof errors.
 #[derive(Clone, Copy, Debug, Fail)]

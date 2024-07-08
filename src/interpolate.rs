@@ -1,8 +1,8 @@
 //! Interpolate between two position points.
 
 use failure;
-use point::Point;
-use source::Source;
+use crate::point::Point;
+use crate::source::Source;
 
 /// Errors for interpolation.
 #[derive(Clone, Copy, Debug, Fail)]
@@ -24,7 +24,7 @@ pub enum Error {
 #[derive(Debug)]
 pub struct Interpolator {
     index: usize,
-    source: Box<Source>,
+    source: Box<dyn Source>,
     points: Vec<Point>,
 }
 
@@ -39,7 +39,7 @@ impl Interpolator {
     /// let reader = sbet::Reader::from_path("data/2-points.sbet").unwrap();
     /// let interpolator = Interpolator::new(Box::new(reader)).unwrap();
     /// ```
-    pub fn new(mut source: Box<Source>) -> Result<Interpolator, failure::Error> {
+    pub fn new(mut source: Box<dyn Source>) -> Result<Interpolator, failure::Error> {
         let mut points = Vec::with_capacity(2);
         for _ in 0..2 {
             points.push(match source.source()? {
@@ -105,7 +105,7 @@ impl Interpolator {
 mod tests {
     use super::*;
 
-    use sbet;
+    use crate::sbet;
 
     #[test]
     fn interp_sbet() {

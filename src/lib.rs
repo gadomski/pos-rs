@@ -10,7 +10,6 @@
         trivial_numeric_casts, unsafe_code, unused_extern_crates, unused_import_braces,
         unused_qualifications, unused_results, variant_size_differences)]
 
-extern crate byteorder;
 #[macro_use]
 extern crate failure;
 
