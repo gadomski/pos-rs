@@ -1,11 +1,11 @@
 //! Points.
 
-use units::Radians;
+use crate::units::Radians;
 
 macro_rules! interpolate {
     ($lhs:ident, $rhs:ident, $factor:ident, $var:ident) => {{
         $lhs.$var + $factor * ($rhs.$var - $lhs.$var)
-    }}
+    }};
 }
 
 macro_rules! interpolate_optional {
@@ -19,7 +19,7 @@ macro_rules! interpolate_optional {
         } else {
             None
         }
-    }}
+    }};
 }
 
 /// A position point.
@@ -84,16 +84,11 @@ impl Point {
             y_angular_rate: interpolate_optional!(self, other, factor, y_angular_rate),
             z_angular_rate: interpolate_optional!(self, other, factor, z_angular_rate),
             accuracy: if let Some(a1) = self.accuracy {
-                if let Some(a2) = other.accuracy {
-                    Some(a1.interpolate(&a2, time))
-                } else {
-                    None
-                }
+                other.accuracy.map(|a2| a1.interpolate(&a2, time))
             } else {
                 None
             },
         }
-
     }
 }
 

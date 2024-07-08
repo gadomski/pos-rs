@@ -1,13 +1,13 @@
 //! Position and orientation quality files.
 
+use crate::point::{Accuracy, SatelliteCount};
+use crate::units::Radians;
 use byteorder::{LittleEndian, ReadBytesExt};
 use failure::Error;
-use point::{Accuracy, SatelliteCount};
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
 use std::iter::IntoIterator;
 use std::path::Path;
-use units::Radians;
 
 /// A poq file reader.
 #[derive(Debug)]
@@ -49,11 +49,11 @@ impl<R: Seek + Read> Reader<R> {
         let devint = reader.read_f64::<LittleEndian>()?;
 
         Ok(Reader {
-            avgint: avgint,
-            devint: devint,
-            maxint: maxint,
-            reader: reader,
-            version: version,
+            avgint,
+            devint,
+            maxint,
+            reader,
+            version,
         })
     }
 
@@ -71,12 +71,10 @@ impl<R: Seek + Read> Reader<R> {
 
         let time = match self.reader.read_f64::<LittleEndian>() {
             Ok(time) => time,
-            Err(err) => {
-                match err.kind() {
-                    ErrorKind::UnexpectedEof => return Ok(None),
-                    _ => return Err(err.into()),
-                }
-            }
+            Err(err) => match err.kind() {
+                ErrorKind::UnexpectedEof => return Ok(None),
+                _ => return Err(err.into()),
+            },
         };
         let north = self.reader.read_f64::<LittleEndian>()?;
         let east = self.reader.read_f64::<LittleEndian>()?;
@@ -97,14 +95,14 @@ impl<R: Seek + Read> Reader<R> {
         };
 
         Ok(Some(Accuracy {
-            time: time,
+            time,
             y: north,
             x: east,
             z: down,
             roll: Radians::from_degrees(roll),
             pitch: Radians::from_degrees(pitch),
             yaw: Radians::from_degrees(yaw),
-            pdop: pdop,
+            pdop,
             satellite_count: Some(satellite_count),
         }))
     }
@@ -148,10 +146,7 @@ impl Version {
     /// Version::new(1, 1);
     /// ```
     pub fn new(major: u16, minor: u16) -> Version {
-        Version {
-            major: major,
-            minor: minor,
-        }
+        Version { major, minor }
     }
 
     fn specifies_satellite_count(&self) -> bool {

@@ -11,6 +11,21 @@ Currently supported formats:
 - pof/poq (Riegl)
 - pos (ASCII)
 
+## Developing
+
+Some of the test files are large and require [git-lfs](https://git-lfs.com/):
+
+```shell
+git lfs fetch
+git lfs checkout
+```
+
+Then, to run the tests:
+
+```shell
+cargo test
+```
+
 ## License
 
 Licensed under either of
