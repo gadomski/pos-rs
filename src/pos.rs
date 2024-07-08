@@ -45,7 +45,7 @@ impl<R: BufRead> Reader<R> {
     pub fn read_point(&mut self) -> Result<Option<Point>, Error> {
         let mut line = String::new();
         let _ = self.reader.read_line(&mut line)?;
-        let values: Vec<_> = line.split_whitespace().map(|s| s.clone()).collect();
+        let values: Vec<_> = line.split_whitespace().collect();
         if values.is_empty() {
             return Ok(None);
         }
