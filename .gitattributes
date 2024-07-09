@@ -1,3 +1,0 @@
-*.pof filter=lfs diff=lfs merge=lfs -text
-*.poq filter=lfs diff=lfs merge=lfs -text
-*.pos filter=lfs diff=lfs merge=lfs -text

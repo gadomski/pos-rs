@@ -18,13 +18,13 @@ jobs:
         os:
           - "macos-latest"
           - "ubuntu-latest"
-          - "windows-latest"
+          # - "windows-latest"  # TODO enable windoze, I don't want to figure out powershell downloading right meow
     steps:
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - name: Set up Rust cache
         uses: Swatinem/rust-cache@v2
+      - name: Download test files
+        run: scripts/download-test-files
       - name: Test
         run: cargo test
   fmt:
