@@ -13,11 +13,10 @@ Currently supported formats:
 
 ## Developing
 
-Some of the test files are large and require [git-lfs](https://git-lfs.com/):
+The test files are not contained within this repo — use `scripts/download-test-files` to download them:
 
 ```shell
-git lfs fetch
-git lfs checkout
+scripts/download-test-files
 ```
 
 Then, to run the tests:

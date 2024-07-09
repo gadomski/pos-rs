@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+#
+# Download some of this repo's test data files from Github releases.
+
+set -e
+
+curl -L https://github.com/gadomski/pos-rs/releases/download/test-files/0916_2014_ie.pos > data/0916_2014_ie.pos
+curl -L https://github.com/gadomski/pos-rs/releases/download/test-files/sbet_mission_1.pof > data/sbet_mission_1.pof
