@@ -1,9 +1,9 @@
 # pos-rs
 
-[![Documentation](https://docs.rs/pos/badge.svg)](https://docs.rs/pos)
-[![Build Status](https://travis-ci.org/gadomski/pos-rs.svg?branch=master)](https://travis-ci.org/gadomski/pos-rs)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/gadomski/pos-rs/ci.yml?style=for-the-badge)](https://github.com/gadomski/pos-rs/actions/workflows/ci.yml)
+[![docs.rs](https://img.shields.io/docsrs/pos?style=for-the-badge)](https://docs.rs/pos/latest/pos/)
 
-Small rust library for reading GNSS/IMU position and accuracy data.
+Small Rust library for reading GNSS/IMU position and accuracy data.
 
 Currently supported formats:
 
@@ -29,8 +29,8 @@ cargo test
 
 Licensed under either of
 
- * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or <http://www.apache.org/licenses/LICENSE-2.0>)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or <http://opensource.org/licenses/MIT>)
 
 at your option.
 
