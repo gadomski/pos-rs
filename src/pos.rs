@@ -3,7 +3,7 @@
 use crate::point::Point;
 use crate::source::Source;
 use crate::units::Radians;
-use failure::Error;
+use crate::Error;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -24,7 +24,7 @@ impl Reader<BufReader<File>> {
     /// use pos::pos::Reader;
     /// let reader = Reader::from_path("data/0916_2014_ie.pos").unwrap();
     /// ```
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, std::io::Error> {
         let mut reader = BufReader::new(File::open(path)?);
         let mut header = String::new();
         let _ = reader.read_line(&mut header)?;

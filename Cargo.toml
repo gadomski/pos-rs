@@ -13,7 +13,7 @@ edition = "2021"
 
 [dependencies]
 byteorder = "1.2"
-failure = "0.1"
+thiserror = "1"
 
 [profile.test]
 opt-level = 2

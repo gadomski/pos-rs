@@ -20,6 +20,7 @@
     variant_size_differences
 )]
 
+mod error;
 pub mod interpolate;
 pub mod pof;
 pub mod point;
@@ -29,6 +30,7 @@ pub mod sbet;
 pub mod source;
 pub mod units;
 
+pub use error::Error;
 pub use interpolate::Interpolator;
 pub use point::{Accuracy, Point};
 pub use source::{AccuracySource, CombinedSource, FileAccuracySource, FileSource, Source};
