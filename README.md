@@ -1,5 +1,6 @@
 # pos-rs
 
+[![Crates.io Version](https://img.shields.io/crates/v/pos?style=for-the-badge)](https://crates.io/crates/pos)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/gadomski/pos-rs/ci.yml?style=for-the-badge)](https://github.com/gadomski/pos-rs/actions/workflows/ci.yml)
 [![docs.rs](https://img.shields.io/docsrs/pos?style=for-the-badge)](https://docs.rs/pos/latest/pos/)
 
