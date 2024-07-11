@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2024-07-11
+
 ### Added
 
 - Use Github Actions ([#7](https://github.com/gadomski/pos-rs/issues/7), [#12](https://github.com/gadomski/pos-rs/pull/12))
@@ -38,7 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Initial release
 
-[Unreleased]: https://github.com/gadomski/pos-rs/compare/v0.1.1...main
+[Unreleased]: https://github.com/gadomski/pos-rs/compare/v0.2.0...main
+[0.2.0]: https://github.com/gadomski/pos-rs/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/gadomski/pos-rs/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/gadomski/pos-rs/releases/tag/v0.1.0
 
