@@ -3,8 +3,8 @@
 use crate::point::Point;
 use crate::source::Source;
 use crate::units::Radians;
+use crate::Error;
 use byteorder::{LittleEndian, ReadBytesExt};
-use failure::Error;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read};
@@ -26,7 +26,7 @@ impl Reader<BufReader<File>> {
     /// use pos::sbet::Reader;
     /// let reader = Reader::from_path("data/2-points.sbet").unwrap();
     /// ```
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, std::io::Error> {
         Ok(Reader {
             reader: BufReader::new(File::open(path)?),
         })
@@ -46,7 +46,7 @@ impl<R: Read> Reader<R> {
     /// let mut reader = Reader::from_path("data/2-points.sbet").unwrap();
     /// let point = reader.read_point().unwrap().unwrap();
     /// ```
-    pub fn read_point(&mut self) -> Result<Option<Point>, Error> {
+    pub fn read_point(&mut self) -> Result<Option<Point>, std::io::Error> {
         use std::io::ErrorKind;
 
         let time = match self.reader.read_f64::<LittleEndian>() {
@@ -102,7 +102,7 @@ impl<R: Read> Iterator for ReaderIterator<R> {
 
 impl<R: Debug + Read> Source for Reader<R> {
     fn source(&mut self) -> Result<Option<Point>, Error> {
-        self.read_point()
+        self.read_point().map_err(Error::from)
     }
 }
 

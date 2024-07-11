@@ -3,7 +3,7 @@
 use crate::pof;
 use crate::point::{Accuracy, Point};
 use crate::poq;
-use failure::Error;
+use crate::Error;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
@@ -45,7 +45,7 @@ pub trait AccuracySource: Debug {
 
 impl<R: Debug + Seek + Read> AccuracySource for poq::Reader<R> {
     fn source(&mut self) -> Result<Option<Accuracy>, Error> {
-        self.read_accuracy()
+        self.read_accuracy().map_err(Error::from)
     }
 }
 

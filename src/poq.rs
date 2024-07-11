@@ -3,7 +3,6 @@
 use crate::point::{Accuracy, SatelliteCount};
 use crate::units::Radians;
 use byteorder::{LittleEndian, ReadBytesExt};
-use failure::Error;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek};
 use std::iter::IntoIterator;
@@ -29,15 +28,14 @@ impl Reader<BufReader<File>> {
     /// use pos::poq::Reader;
     /// let reader = Reader::from_path("data/sbet_mission_1.poq").unwrap();
     /// ```
-    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, Error> {
+    pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Reader<BufReader<File>>, std::io::Error> {
         let reader = BufReader::new(File::open(path)?);
         Reader::new(reader)
     }
 }
 
 impl<R: Seek + Read> Reader<R> {
-    // TODO can I make this just an io error on return?
-    fn new(mut reader: R) -> Result<Reader<R>, Error> {
+    fn new(mut reader: R) -> Result<Reader<R>, std::io::Error> {
         let mut preamble = [0; 35];
         reader.read_exact(&mut preamble)?;
 
@@ -66,14 +64,14 @@ impl<R: Seek + Read> Reader<R> {
     /// let mut reader = Reader::from_path("data/sbet_mission_1.poq").unwrap();
     /// let accuracy = reader.read_accuracy().unwrap();
     /// ```
-    pub fn read_accuracy(&mut self) -> Result<Option<Accuracy>, Error> {
+    pub fn read_accuracy(&mut self) -> Result<Option<Accuracy>, std::io::Error> {
         use std::io::ErrorKind;
 
         let time = match self.reader.read_f64::<LittleEndian>() {
             Ok(time) => time,
             Err(err) => match err.kind() {
                 ErrorKind::UnexpectedEof => return Ok(None),
-                _ => return Err(err.into()),
+                _ => return Err(err),
             },
         };
         let north = self.reader.read_f64::<LittleEndian>()?;
